@@ -1,0 +1,1 @@
+This contains a GitLab CI pipeline configuration file that sets up a continuous deployment pipeline with GitLab managed terraform. 
