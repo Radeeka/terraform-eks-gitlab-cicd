@@ -1,0 +1,63 @@
+stages:
+ - build_test
+ - deploy_test
+
+.terraform:plan_stg: &terraform_plan_stg
+  stage: build_test
+  image: registry.gitlab.com/gitlab-org/terraform-images/releases/1.4:v1.0.0
+  variables:
+    TF_ROOT: ${CI_PROJECT_DIR}/terraform/app
+    TF_STATE_NAME: terraform_test.tfstate
+  before_script:
+    - apk add --update py-pip
+    - pip install awscli
+    - export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
+    - export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
+    - aws eks update-kubeconfig --region <region> --name <cluster-name>
+  script:
+    - gitlab-terraform plan -var-file="stage.json" -var="app_version=$DEPLOY_VERSION_TEST"
+    - gitlab-terraform plan-json
+    - echo $DEPLOY_VERSION_TEST
+  resource_group: ${TF_STATE_NAME}
+  artifacts:
+    public: false
+    paths:
+      - ${TF_ROOT}/plan.cache
+    reports:
+      terraform: ${TF_ROOT}/plan.json
+
+.terraform:apply_stg: &terraform_apply_stg
+  stage: deploy_test
+  image: registry.gitlab.com/gitlab-org/terraform-images/releases/1.4:v1.0.0
+  variables:
+    TF_ROOT: ${CI_PROJECT_DIR}/terraform/app
+    TF_STATE_NAME: terraform_test.tfstate
+  before_script:
+    - apk add --update py-pip
+    - pip install awscli
+    - export AWS_ACCESS_KEY_ID=$STG_AWS_ACCESS_KEY_ID
+    - export AWS_SECRET_ACCESS_KEY=$STG_AWS_SECRET_ACCESS_KEY
+    - aws eks update-kubeconfig --region <region> --name <cluster-name>
+  script:
+    - gitlab-terraform apply
+    - echo $DEPLOY_VERSION_TEST
+  resource_group: ${TF_STATE_NAME}
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TF_AUTO_DEPLOY == "true"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+
+plan_stg:
+ extends: .terraform:plan_stg
+ only:
+    variables:
+      - $DEPLOY_VERSION_TEST
+
+apply_stg:
+  extends: .terraform:apply_stg
+  dependencies:
+    - plan_stg
+  environment:
+    name: $TF_STATE_NAME  
+  rules:
+    - if: $DEPLOY_VERSION_TEST
