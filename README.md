@@ -1,73 +1,80 @@
-# GitLab CI/CD Pipeline for AWS EKS Deployment with Terraform
+# GitLab CI/CD Pipeline for EKS Deployment
 
-This repository contains GitLab CI/CD configurations to automate the deployment of AWS Elastic Kubernetes Service (EKS) clusters using Terraform. The pipeline is designed to provide a secure, version-controlled, and scalable infrastructure setup.
+This repository contains a GitLab CI/CD pipeline configuration for deploying a given version of an application to an Amazon Elastic Kubernetes Service (EKS) cluster. The pipeline utilizes GitLab's managed Terraform and HTTP backend for secure storage of the Terraform state file.
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Prerequisites](#prerequisites)
-- [GitLab CI/CD Configuration](#gitlab-cicd-configuration)
+- [Introduction](#introduction)
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Configuration](#configuration)
 - [Usage](#usage)
-- [Multiple Environments](#multiple-environments)
-- [Terraform Backend Configuration](#terraform-backend-configuration)
+- [Pipeline Stages](#pipeline-stages)
+- [Environments](#environments)
 - [Contributing](#contributing)
 - [License](#license)
 
-## Overview
+## Introduction
 
-This GitLab CI/CD pipeline automates the provisioning and management of AWS EKS clusters using Terraform. It offers the following features:
+This GitLab CI/CD pipeline is designed to automate the deployment of your application to an AWS EKS cluster. It leverages GitLab's CI/CD capabilities and Terraform for infrastructure provisioning. Key features of this pipeline include secure state management, environment-specific deployments, and built-in Terraform plan and apply stages.
 
-1. **GitLab Managed Terraform**: Utilizes GitLab's built-in Terraform integration for secure and version-controlled infrastructure management.
+## Features
 
-2. **Secure Terraform State Storage**: Leverages GitLab's HTTP backend for Terraform to securely store the state file.
+1. **Infrastructure as Code (IaC)**: Utilizes GitLab's managed Terraform for infrastructure provisioning, ensuring a consistent and version-controlled approach.
 
-3. **Terraform Plan and Apply**: The pipeline includes a build stage for generating Terraform plans and a deploy stage for applying those plans to create or update EKS clusters.
+2. **Secure Terraform State Management**: Uses GitLab's managed HTTP backend for storing Terraform state securely, preventing accidental exposure of sensitive information.
 
-4. **Multi-Environment Deployment**: The pipeline can deploy to multiple environments, such as test and production, thanks to the use of pipeline schedule variables.
+3. **Multi-Environment Support**: Configurable for deploying to multiple environments (e.g., test and production) using GitLab's pipeline schedule variables.
 
-5. **Configuration in .gitlab-ci.yml**: Everything related to the CI/CD pipeline is defined within the `.gitlab-ci.yml` file for easy customization and management.
+4. **AWS EKS Deployment**: Specifically tailored for deploying applications to Amazon EKS clusters.
 
-## Prerequisites
+5. **Built-in CI/CD Stages**: Includes Terraform plan and apply stages in the GitLab CI/CD pipeline for infrastructure changes.
+
+6. **Everything in `.gitlab-ci.yml`**: The entire pipeline configuration is defined in the `.gitlab-ci.yml` file, making it easy to manage and version control.
+
+## Getting Started
+
+Follow these steps to get started with deploying your application using this GitLab CI/CD pipeline:
+
+### Prerequisites
 
 Before using this pipeline, ensure you have the following prerequisites in place:
 
-- Access to a GitLab project with the necessary permissions to create and manage CI/CD pipelines.
-- AWS credentials and permissions set up for the GitLab Runner (if using a custom Runner).
-- Terraform installed on the GitLab Runner.
+- A GitLab account and repository set up.
+- AWS credentials and necessary permissions for deploying to EKS.
+- Your application code and necessary Terraform configurations.
 
-## GitLab CI/CD Configuration
+### Configuration
 
-The GitLab CI/CD pipeline is defined in the `.gitlab-ci.yml` file. Customize this file to fit your specific requirements, including Terraform variables, environment settings, and deployment stages.
+1. Clone this repository to your local machine.
+
+2. Customize the `.gitlab-ci.yml` file to match your specific deployment requirements, including Terraform configurations, environment variables, and AWS credentials.
+
+3. Commit and push the changes to your GitLab repository.
+
+4. Configure your GitLab project's CI/CD settings to use the `.gitlab-ci.yml` file for pipeline configuration.
 
 ## Usage
 
-To use this GitLab CI/CD pipeline for AWS EKS deployment, follow these steps:
+Once the pipeline is configured to trigger the pipeline manually. You can also configure it to trigger a GitLab CICD piepline when new changes are merged into master branch.
 
-1. Clone this repository to your local machine.
-   ```bash
-   git clone https://github.com/yourusername/your-repo.git
-   ```
+## Pipeline Stages
 
-2. Configure your AWS credentials either on the GitLab Runner or using GitLab's CI/CD environment variables.
+The GitLab CI/CD pipeline includes the following stages:
 
-3. Customize the `.gitlab-ci.yml` file to match your AWS infrastructure, Terraform configurations, and deployment stages.
+1. **Terraform Plan**: This stage runs `terraform init` and `terraform plan` to preview the changes to be applied to the infrastructure. It helps identify any potential issues before applying changes.
 
-4. Push your changes to the repository.
+2. **Terraform Apply**: If the plan stage succeeds and is manually approved or configured to auto-apply, this stage runs `terraform apply` to provision or update the infrastructure.
 
-5. Create or schedule a GitLab CI/CD pipeline. The pipeline will execute the defined stages, including Terraform planning and applying.
+## Environments
 
-## Multiple Environments
-
-To deploy to different environments (e.g., test and prod), use GitLab's pipeline schedule variables to specify the target environment. The pipeline will adapt its behavior based on these variables.
-
-## Terraform Backend Configuration
-
-This pipeline utilizes GitLab's HTTP backend for Terraform to securely store the state file. Ensure that you have configured this backend according to your GitLab project settings.
+This pipeline supports multiple environments (e.g., test and production) using GitLab's pipeline schedule variables. You can configure these variables to target specific AWS EKS clusters or environments.
 
 ## Contributing
 
-We welcome contributions to enhance and improve this GitLab CI/CD pipeline. If you encounter issues, have suggestions, or want to contribute new features, please open an issue or submit a merge request following our [contribution guidelines](CONTRIBUTING.md).
+Contributions to improve this GitLab CI/CD pipeline configuration are welcome. If you encounter issues or have suggestions for enhancements, please open an issue or submit a merge request following our [contribution guidelines](CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE), which means you are free to use, modify, and distribute the code as per the terms of the license.
+This project is licensed under the [MIT License](LICENSE), which allows you to use and modify the pipeline configuration as needed.
